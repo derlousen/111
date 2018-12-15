@@ -13,6 +13,13 @@ mydb = myclient["record"]
 btc = mydb['btc']
 
 
-x = btc.find()[0]
+x = btc.find()[2]
 
-print(x['data'])
+bids = x['data']['bids']
+asks = x['data']['asks']
+ts = x['data']['ts']
+
+print(ts)
+print(bids)
+print(asks)
+
