@@ -1,5 +1,6 @@
 Forked from following project:
 
+https://www.jianshu.com/p/0d1e9f0db887
 ### DA-LSTM
 
 This is an implementation of paper ["A Dual-Stage Attention-Based Recurrent Neural Network for Time Series Prediction"](https://arxiv.org/pdf/1704.02971). I only did a test to predict the price of AAPL.US by its historical data as well as the price of its opponent MSFT.US. 
@@ -27,8 +28,8 @@ Downloaded from [NASDAQ 100 STOCK DATA](http://cseweb.ucsd.edu/~yaq007/NASDAQ100
 
 Traing 500 epochs, with batch-size 128, save models every 100 epochs.
 
-```
-Python3 trainer -e 500 -b 128 -i 100
+``` bash
+python trainer.py -e 500 -b 128 -i 100
 ```
 
 #### Sample test
@@ -36,6 +37,6 @@ Python3 trainer -e 500 -b 128 -i 100
 Test data use model "encoder50" and "decoder50"
 
 ```
-Python3 trainer -t -m 50
+python trainer.py -t -m 50
 ```
 
