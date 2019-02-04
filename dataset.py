@@ -17,6 +17,8 @@ class Dataset:
         self.test_size = stock_frame2.shape[0] - T  - 1 - self.train_size
         if normalized:
             stock_frame2 = stock_frame2 - stock_frame2.mean()
+
+        # print(stock_frame1, stock_frame2)
         self.X, self.y, self.y_seq = self.time_series_gen(stock_frame1, stock_frame2, T)
         #self.X = self.percent_normalization(self.X)
         #self.y = self.percent_normalization(self.y)
@@ -41,6 +43,7 @@ class Dataset:
             ts_x.append(X[i: last])
             ts_y.append(y[last])
             ts_y_seq.append(y[i: last])
+        # print(len(ts_x), len(ts_y), len(ts_y_seq))
         return np.array(ts_x), np.array(ts_y), np.array(ts_y_seq)
 
     def crop_stock(self, df, date):

@@ -45,6 +45,7 @@ class Trainer:
                 var_y_seq = self.to_variable(y_seq_train[i: batch_end])
                 if var_x.dim() == 2:
                     var_x = var_x.unsqueeze(2)
+                # print(var_x.shape)
                 code = self.encoder(var_x)
                 y_res = self.decoder(code, var_y_seq)
 
@@ -112,16 +113,16 @@ class Trainer:
 def getArgParser():
     parser = argparse.ArgumentParser(description='Train the dual-stage attention-based model on stock')
     parser.add_argument(
-        '-e', '--epoch', type=int, default=5000,
+        '-e', '--epoch', type=int, default=10,
         help='the number of epochs')
     parser.add_argument(
-        '-b', '--batch', type=int, default=2048,
+        '-b', '--batch', type=int, default=512,
         help='the mini-batch size')
     parser.add_argument(
         '-s', '--split', type=float, default=0.8,
         help='the split ratio of validation set')
     parser.add_argument(
-        '-i', '--interval', type=int, default=100,
+        '-i', '--interval', type=int, default=10,
         help='save models every interval epoch')
     parser.add_argument(
         '-l', '--lrate', type=float, default=0.01,
@@ -145,12 +146,15 @@ if __name__ == '__main__':
     interval = args.interval
     lr = args.lrate
     test = args.test
-    mname = args.model
-    trainer = Trainer(config.DRIVING, config.TARGET, 10, split, lr)
+    model_name = args.model
+    trainer = Trainer(config.DRIVING, config.TARGET, 100, split, lr)
+    # model_name = str(10)
+    # test = True
+    # batch_size = 170
     if not test:
         trainer.train_minibatch(num_epochs, batch_size, interval)
     else:
-        encoder_name = 'models/encoder' + mname + '-norm' + '.model'
-        decoder_name = 'models/decoder' + mname + '-norm' + '.model'
+        encoder_name = 'models/encoder' + model_name + '-norm' + '.model'
+        decoder_name = 'models/decoder' + model_name + '-norm' + '.model'
         trainer.load_model(encoder_name, decoder_name)
-        trainer.test(mname, batch_size)
+        trainer.test(model_name, batch_size)
