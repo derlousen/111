@@ -171,3 +171,4 @@ cam.py
 *.dat
 *.bak
 *.dir
+*.npy

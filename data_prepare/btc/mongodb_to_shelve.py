@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 
 myclient = pymongo.MongoClient('mongodb://192.168.1.19:12345/')
-db_file = shelve.open('data_id.db', flag='n')
+db_file = shelve.open('raw_data.db', flag='n')
 
 mydb = myclient["record"]
 btc = mydb['btc']
@@ -51,7 +51,7 @@ print('Start time: ',start_time, '\t', data_len)
 
 db_file['total'] = data_len
 
-for i in tqdm(range(data_len)):
+for i in tqdm(range(data_len), ncols=75):
     data = mg_data[i]['data_id']
 
     bids = data['bids']

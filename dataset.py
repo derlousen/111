@@ -19,6 +19,8 @@ class Dataset:
             stock_frame2 = stock_frame2 - stock_frame2.mean()
 
         # print(stock_frame1, stock_frame2)
+
+
         self.X, self.y, self.y_seq = self.time_series_gen(stock_frame1, stock_frame2, T)
         #self.X = self.percent_normalization(self.X)
         #self.y = self.percent_normalization(self.y)
