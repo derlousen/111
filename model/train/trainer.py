@@ -52,19 +52,21 @@ kwargs = {'num_workers': config.nThreads, 'pin_memory': True} if use_cuda else {
 # Set model
 # cuda3 = torch.device('cuda:3')
 
-model = net_model.ONetHeatmap()
-
+model_encoder = net_model.AttnEncoder()
+model_decoder = net_model.AttnEncoder()
 
 # model.load_state_dict(torch.load('model_039_0.33837378.pth'))
 
-model_data = torch.nn.DataParallel(model, device_ids=[0]).cuda()
+model_encoder_data = torch.nn.DataParallel(model_encoder, device_ids=[0]).cuda()
+model_decoder_data = torch.nn.DataParallel(model_decoder, device_ids=[0]).cuda()
 # model_data = model.to(device)
 
 # Set checkpoint
 checkpoint = CheckPoint(config.save_path)
 
 # Set optimizer
-optimizer = torch.optim.Adam(model_data.parameters(), lr=config.lr)
+optimizer_en = torch.optim.Adam(model_encoder_data.parameters(), lr=config.lr)
+optimizer_de = torch.optim.Adam(model_decoder_data.parameters(), lr=config.lr)
 # optimizer = torch.optim.Adagrad(model_data.parameters(), lr=config.lr)
 # optimizer = torch.optim.Adagrad([
 #         {'params': helper.get_parameters(model_data, bias=False)},
@@ -76,7 +78,7 @@ optimizer = torch.optim.Adam(model_data.parameters(), lr=config.lr)
 # optimizer = torch.optim.SGD(model_data.parameters(), lr=config.lr, momentum=0.9)
 
 
-scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=config.step, gamma=0.1)
+scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer_en, milestones=config.step, gamma=0.1)
 
 
 data_list = 'data/'
