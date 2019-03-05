@@ -5,20 +5,25 @@ import math
 class Dataset:
 
     def __init__(self, driving_csv, target_csv, T, split_ratio=0.8, normalized=False):
-        stock_frame1 = pd.read_csv(driving_csv)
-        stock_frame2 = pd.read_csv(target_csv)
-        if stock_frame1.shape[0] > stock_frame2.shape[0]:
-            stock_frame1 = self.crop_stock(stock_frame1, stock_frame2['Date'][0]).reset_index()
-        else:
-            stock_frame2 = self.crop_stock(stock_frame2, stock_frame1['Date'][0]).reset_index()
-        stock_frame1 = stock_frame1['Close'].fillna(method='pad')
-        stock_frame2 = stock_frame2['Close'].fillna(method='pad')
+        # stock_frame1 = pd.read_csv(driving_csv)
+        # stock_frame2 = pd.read_csv(target_csv)
+        # if stock_frame1.shape[0] > stock_frame2.shape[0]:
+        #     stock_frame1 = self.crop_stock(stock_frame1, stock_frame2['Date'][0]).reset_index()
+        # else:
+        #     stock_frame2 = self.crop_stock(stock_frame2, stock_frame1['Date'][0]).reset_index()
+        # stock_frame1 = stock_frame1['Close'].fillna(method='pad')
+        # stock_frame2 = stock_frame2['Close'].fillna(method='pad')
+
+        stock_frame1 = np.load(driving_csv)/2
+        stock_frame2 = np.load(target_csv)/2
+
         self.train_size = int(split_ratio * (stock_frame2.shape[0] - T - 1))
         self.test_size = stock_frame2.shape[0] - T  - 1 - self.train_size
-        if normalized:
-            stock_frame2 = stock_frame2 - stock_frame2.mean()
+        # if normalized:
+        #     stock_frame2 = stock_frame2 - stock_frame2.mean()
 
         # print(stock_frame1, stock_frame2)
+
 
 
         self.X, self.y, self.y_seq = self.time_series_gen(stock_frame1, stock_frame2, T)

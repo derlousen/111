@@ -172,3 +172,4 @@ cam.py
 *.bak
 *.dir
 *.npy
+*.model

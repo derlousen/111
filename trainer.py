@@ -1,8 +1,7 @@
 import argparse
 import torch
-import matplotlib
-
-matplotlib.use('Agg')
+# import matplotlib
+# matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 from torch import nn
@@ -11,6 +10,7 @@ from model import AttnEncoder, AttnDecoder
 from dataset import Dataset
 from torch import optim
 import config
+# from tqdm import tqdm
 
 
 class Trainer:
@@ -34,6 +34,7 @@ class Trainer:
         for epoch in range(num_epochs):
             i = 0
             loss_sum = 0
+            # counter_bar = tqdm(total=self.train_size, ncols=70)
             while i < self.train_size:
                 self.encoder_optim.zero_grad()
                 self.decoder_optim.zero_grad()
@@ -58,12 +59,14 @@ class Trainer:
                 self.decoder_optim.step()
                 # print('[%d], loss is %f' % (epoch, 10000 * loss.data_id[0]))
                 # loss_sum += loss.item().data_id[0]
+
                 loss_sum += loss.item()
                 i = batch_end
+                # counter_bar.update(batch_size)
             print('epoch [%d] finished, the average loss is %f' % (epoch, loss_sum))
             if (epoch + 1) % (interval) == 0 or epoch + 1 == num_epochs:
-                torch.save(self.encoder.state_dict(), 'models/encoder' + str(epoch + 1) + '-norm' + '.model')
-                torch.save(self.decoder.state_dict(), 'models/decoder' + str(epoch + 1) + '-norm' + '.model')
+                torch.save(self.encoder.state_dict(), 'saved_models/encoder' + str(epoch + 1) + '-norm' + '.model')
+                torch.save(self.decoder.state_dict(), 'saved_models/decoder' + str(epoch + 1) + '-norm' + '.model')
                 print('data_id stored')
 
     def test(self, num_epochs, batch_size):
@@ -80,6 +83,9 @@ class Trainer:
         plt.xlabel('Days')
         plt.ylabel('Stock price of AAPL.US(USD)')
         plt.savefig('results/res-' + str(num_epochs) + '-' + str(batch_size) + '.png')
+        plt.show()
+        print('end')
+
 
     def predict(self, x, y, y_seq, batch_size):
         y_pred = np.zeros(x.shape[0])
@@ -113,19 +119,19 @@ class Trainer:
 def getArgParser():
     parser = argparse.ArgumentParser(description='Train the dual-stage attention-based model on stock')
     parser.add_argument(
-        '-e', '--epoch', type=int, default=10,
+        '-e', '--epoch', type=int, default=500,
         help='the number of epochs')
     parser.add_argument(
         '-b', '--batch', type=int, default=512,
         help='the mini-batch size')
     parser.add_argument(
-        '-s', '--split', type=float, default=0.8,
+        '-s', '--split', type=float, default=0.95,
         help='the split ratio of validation set')
     parser.add_argument(
         '-i', '--interval', type=int, default=10,
-        help='save models every interval epoch')
+        help='save saved_models every interval epoch')
     parser.add_argument(
-        '-l', '--lrate', type=float, default=0.01,
+        '-l', '--lrate', type=float, default=3e-3,
         help='learning rate')
     parser.add_argument(
         '-t', '--test', action='store_true',
@@ -148,13 +154,19 @@ if __name__ == '__main__':
     test = args.test
     model_name = args.model
     trainer = Trainer(config.DRIVING, config.TARGET, 100, split, lr)
-    # model_name = str(10)
-    # test = True
+    model_name = str(270)
+    test = True
     # batch_size = 170
     if not test:
         trainer.train_minibatch(num_epochs, batch_size, interval)
+
+        # encoder_name = 'saved_models/encoder' + str(num_epochs) + '-norm' + '.model'
+        # decoder_name = 'saved_models/decoder' + str(num_epochs) + '-norm' + '.model'
+        # trainer.load_model(encoder_name, decoder_name)
+        trainer.test(str(num_epochs), 256)
     else:
-        encoder_name = 'models/encoder' + model_name + '-norm' + '.model'
-        decoder_name = 'models/decoder' + model_name + '-norm' + '.model'
+        encoder_name = 'saved_models/encoder' + model_name + '-norm' + '.model'
+        decoder_name = 'saved_models/decoder' + model_name + '-norm' + '.model'
         trainer.load_model(encoder_name, decoder_name)
-        trainer.test(model_name, batch_size)
+        trainer.test(model_name, 256)
+
